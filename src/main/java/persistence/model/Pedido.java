@@ -24,6 +24,10 @@ public class Pedido extends PanacheEntity {
   @JoinColumn(name = "sabor_id", nullable = false)
   private Sabor sabor;
 
+  @ManyToOne
+  @JoinColumn(name = "status_id", nullable = false)
+  private Status status;
+
   @Column(name = "quantidade", nullable = false)
   private Integer quantidade;
 

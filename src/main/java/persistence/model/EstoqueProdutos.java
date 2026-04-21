@@ -1,5 +1,7 @@
 package persistence.model;
 
+import java.time.LocalDateTime;
+
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,4 +26,9 @@ public class EstoqueProdutos extends PanacheEntity {
   @Column(name = "validade_dias", nullable = true)
   private Integer validadeDias;
 
+  @Column(name = "data_criacao", nullable = false, updatable = false)
+  private LocalDateTime dataCriacao;
+
+  @Column(name = "data_atualizacao", nullable = false)
+  private LocalDateTime dataAtualizacao;
 }

@@ -17,4 +17,7 @@ public class Cliente extends PanacheEntity{
 
   @Column(name = "telefone", nullable = false)
   private String telefone;
+
+  @Column(name = "indicador_ativo", nullable = false)
+  private Boolean indicadorAtivo = true;
 }

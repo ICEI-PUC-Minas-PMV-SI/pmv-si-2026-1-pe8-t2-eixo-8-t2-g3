@@ -1,9 +1,10 @@
 package persistence.repository;
 
-import interfaces.StatusPersistenceLayer;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 import persistence.model.Status;
 
-public class StatusRepository implements PanacheRepository<Status>, StatusPersistenceLayer{
+@ApplicationScoped
+public class StatusRepository implements PanacheRepository<Status> {
 
 }

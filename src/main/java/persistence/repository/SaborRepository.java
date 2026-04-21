@@ -1,9 +1,10 @@
 package persistence.repository;
 
-import interfaces.SaborPersistenceLayer;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 import persistence.model.Sabor;
 
-public class SaborRepository implements PanacheRepository<Sabor>, SaborPersistenceLayer {
+@ApplicationScoped
+public class SaborRepository implements PanacheRepository<Sabor> {
 
 }
