@@ -2,8 +2,8 @@ package controller;
 
 import java.util.List;
 
-import dto.request.StatusRequest;
-import dto.response.StatusResponse;
+import dto.request.ClienteRequest;
+import dto.response.ClienteResponse;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -14,24 +14,38 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import service.StatusService;
+import service.ClienteService;
 
-@Path("/status")
+@Path("/clientes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class StatusController {
+public class ClienteController {
   
   @Inject
-  StatusService service;
+  ClienteService service;
 
   @GET
   public Response listarTodos() {
     try {
-      List<StatusResponse> statuses = service.listarTodos();
-      return Response.ok(statuses).build();
+      List<ClienteResponse> clientes = service.listarTodos();
+      return Response.ok(clientes).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-        .entity("Erro ao listar status").build();
+        .entity("Erro ao listar clientes").build();
+    }
+  }
+
+  @POST
+  public Response criar(ClienteRequest input) {
+    try {
+      ClienteResponse cliente = service.criar(input);
+      return Response.status(Response.Status.CREATED).entity(cliente).build();
+    } catch (IllegalArgumentException e) {
+      return Response.status(Response.Status.BAD_REQUEST)
+        .entity(e.getMessage()).build();
+    } catch (Exception e) {
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+        .entity("Erro ao criar cliente").build();
     }
   }
 
@@ -39,48 +53,34 @@ public class StatusController {
   @Path("/{id}")
   public Response obterPorId(@PathParam("id") Long id) {
     try {
-      StatusResponse status = service.obterPorId(id);
-      return Response.ok(status).build();
+      ClienteResponse cliente = service.obterPorId(id);
+      return Response.ok(cliente).build();
     } catch (IllegalArgumentException e) {
       return Response.status(Response.Status.NOT_FOUND)
         .entity(e.getMessage()).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-        .entity("Erro ao obter status").build();
-    }
-  }
-
-  @POST
-  public Response criar(StatusRequest input) {
-    try {
-      StatusResponse status = service.criar(input);
-      return Response.status(Response.Status.CREATED).entity(status).build();
-    } catch (IllegalArgumentException e) {
-      return Response.status(Response.Status.BAD_REQUEST)
-        .entity(e.getMessage()).build();
-    } catch (Exception e) {
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-        .entity("Erro ao criar status").build();
+        .entity("Erro ao obter cliente").build();
     }
   }
 
   @PUT
   @Path("/{id}")
-  public Response atualizar(@PathParam("id") Long id, StatusRequest input) {
+  public Response atualizar(@PathParam("id") Long id, ClienteRequest input) {
     try {
-      StatusResponse status = service.atualizar(id, input);
-      return Response.ok(status).build();
+      ClienteResponse cliente = service.atualizar(id, input);
+      return Response.ok(cliente).build();
     } catch (IllegalArgumentException e) {
       return Response.status(Response.Status.NOT_FOUND)
         .entity(e.getMessage()).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-        .entity("Erro ao atualizar status").build();
+        .entity("Erro ao atualizar cliente").build();
     }
   }
 
   @POST
-  @Path("/{id}/alternar")
+  @Path("/{id}/status")
   public Response alternarStatus(@PathParam("id") Long id) {
     try {
       service.alternarStatus(id);
@@ -90,7 +90,7 @@ public class StatusController {
         .entity(e.getMessage()).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-        .entity("Erro ao alterar status").build();
+        .entity("Erro ao alterar status do cliente").build();
     }
   }
 }
