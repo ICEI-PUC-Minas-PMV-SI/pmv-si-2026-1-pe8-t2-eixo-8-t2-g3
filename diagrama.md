@@ -1,1 +1,1 @@
-<img width="627" height="1080" alt="Diagrama de caso de uso" src="https://github.com/user-attachments/assets/106af004-88ab-4a5a-b2d2-010bdf708a2b" />
+<img width="533" height="1080" alt="Diagrama" src="https://github.com/user-attachments/assets/766f349a-066d-4f67-b026-03ba3a1c8ff9" />
