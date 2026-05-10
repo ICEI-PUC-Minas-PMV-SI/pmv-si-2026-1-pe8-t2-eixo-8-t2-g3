@@ -1,1 +1,1 @@
-<img width="533" height="1080" alt="Diagrama" src="https://github.com/user-attachments/assets/766f349a-066d-4f67-b026-03ba3a1c8ff9" />
+<img width="525" height="1080" alt="Diagrama (2)" src="https://github.com/user-attachments/assets/0fef03e0-e124-4c4d-be41-8aceac42f05a" />
