@@ -88,6 +88,7 @@ public class PedidoService {
       pedido.setStatus(statusPendente);
       pedido.setQuantidade(input.quantidade());
       pedido.setDataPedido(LocalDate.now());
+      pedido.setValorUnitario(input.valorUnitario());
       pedido.persist();
       
       return toResponse(pedido);
@@ -164,7 +165,8 @@ public class PedidoService {
       pedido.getSabor().getNome(),
       pedido.getQuantidade(),
       pedido.getDataPedido(),
-      pedido.getStatus().getNome()
+      pedido.getStatus().getNome(),
+      pedido.getValorUnitario()
     );
   }
 }

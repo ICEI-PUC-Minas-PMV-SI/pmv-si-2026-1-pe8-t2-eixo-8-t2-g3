@@ -33,4 +33,7 @@ public class Pedido extends PanacheEntity {
 
   @Column(name = "data_pedido", nullable = false)
   private LocalDate dataPedido;
+
+  @Column(name = "valor_unitario", nullable = false)
+  private Double valorUnitario;
 }

@@ -10,5 +10,6 @@ public record PedidoResponse(
   String saborNome,
   Integer quantidade,
   LocalDate dataPedido,
-  String statusNome
+  String statusNome,
+  Double valorUnitario
 ) {}
