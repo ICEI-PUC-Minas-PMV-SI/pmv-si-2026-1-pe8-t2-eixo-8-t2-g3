@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import dto.request.EstoqueRequest;
 import dto.request.PedidoRequest;
 import dto.response.PedidoResponse;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -32,6 +33,9 @@ public class PedidoService {
   
   @Inject
   StatusRepository statusRepository;
+
+  @Inject
+  EstoqueService estoqueService;
   
   public List<PedidoResponse> listarTodos() {
     List<Pedido> pedidos = repository.listAll();
@@ -147,13 +151,22 @@ public class PedidoService {
       }
       Status statusFinalizado = statusList.get(0);
       
-      // TODO: Dar baixa no estoque
+      darBaixaEstoque(pedido);
       
       pedido.setStatus(statusFinalizado);
       pedido.persist();
     } catch (Exception e) {
       throw new RuntimeException("Erro ao finalizar pedido: " + e.getMessage(), e);
     }
+  }
+
+  private void darBaixaEstoque(Pedido pedido) {
+    EstoqueRequest request = new EstoqueRequest(
+      pedido.getSabor().id,
+      -pedido.getQuantidade(),
+      0
+    );
+    estoqueService.criar(request);
   }
 
   private PedidoResponse toResponse(Pedido pedido) {
