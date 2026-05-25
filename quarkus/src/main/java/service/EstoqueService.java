@@ -64,8 +64,8 @@ public class EstoqueService {
         throw new IllegalArgumentException("Sabor não encontrado");
       }
 
-      if (input.quantidadeMovimentada() == null || input.quantidadeMovimentada() <= 0) {
-        throw new IllegalArgumentException("Quantidade deve ser maior que zero");
+      if (input.quantidadeMovimentada() == null || input.quantidadeMovimentada() == 0) {
+        throw new IllegalArgumentException("Quantidade deve ser diferente de zero");
       }
 
       EstoqueProdutos estoque = new EstoqueProdutos();
