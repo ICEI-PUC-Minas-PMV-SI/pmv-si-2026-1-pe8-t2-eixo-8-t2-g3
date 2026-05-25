@@ -7,4 +7,5 @@ export default [
   route("estoque", "routes/estoque.tsx"),
   route("pedidos", "routes/pedidos.tsx"),
   route("status", "routes/status.tsx"),
+  route("dashboards", "routes/dashboards.tsx"),
 ] satisfies RouteConfig;

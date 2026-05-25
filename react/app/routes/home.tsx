@@ -23,7 +23,7 @@ export function meta({}: Route.MetaArgs) {
 const modules = [
   {
     label: "Pedidos",
-    description: "Criar, acompanhar, finalizar e cancelar pedidos",
+    description: "Gerenciamento de pedidos",
     to: "/pedidos",
     icon: "🛒",
   },

@@ -103,3 +103,11 @@ export const statusApi = {
   atualizar: async (id: number, body: { nome: string }) => (await api.put<Status>(`/status/${id}`, body)).data,
   alternar: async (id: number) => (await api.post<Status>(`/status/${id}/alternar`)).data,
 };
+
+// ── Dashboards ─────────────────────────────────────────────────────────────
+
+export const dashboardsApi = {
+  vendasPorMes: async () => (await api.get<{ periodo: string; valorTotal: number }[]>("/analytics/vendas")).data,
+  totalDeClientesAtivos: async () => (await api.get<{ totalClientesAtivos: number }>("/analytics/clientes")).data,
+  produtosEmEstoque: async () => (await api.get<{ totalProdutosEstoque: number }>("/analytics/produtos-estoque")).data,
+};

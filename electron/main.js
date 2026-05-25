@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const { spawn } = require("child_process");
 const path = require("path");
 const http = require("http");
@@ -86,7 +86,7 @@ function pollServer(url, timeoutMs) {
   });
 }
 
-function createWindow() {
+async function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -99,10 +99,58 @@ function createWindow() {
       contextIsolation: true,
     },
   });
+  // opcional: limpar cache/storage durante desenvolvimento para evitar assets antigos
+  try {
+    if (process.env.DEV_CLEAR_CACHE === '1') {
+      const sess = mainWindow.webContents.session;
+      await sess.clearCache();
+      await sess.clearStorageData();
+      console.log('Dev: cache and storage cleared before loading URL');
+    }
+  } catch (err) {
+    console.warn('Failed clearing session cache:', err);
+  }
+
   mainWindow.loadURL(`http://localhost:${PORT}/`);
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
+}
+
+ipcMain.handle("dialog:saveDatabase", async () => {
+  const dbPath = findDatabasePath();
+  if (!dbPath) {
+    return { success: false, error: "Arquivo do banco de dados nao encontrado" };
+  }
+
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const result = await dialog.showSaveDialog(mainWindow, {
+    defaultPath: `desejonatural-backup-${dateStr}.db`,
+    filters: [{ name: "Banco de Dados SQLite", extensions: ["db"] }],
+  });
+
+  if (result.canceled) {
+    return { success: false, error: "Operacao cancelada" };
+  }
+
+  try {
+    fs.copyFileSync(dbPath, result.filePath);
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: `Erro ao copiar arquivo: ${err.message}` };
+  }
+});
+
+function findDatabasePath() {
+  const candidates = [
+    path.join(__dirname, "desejonatural.db"),
+    path.join(process.resourcesPath || "", "desejonatural.db"),
+    path.join(process.cwd(), "desejonatural.db"),
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
 }
 
 app.whenReady().then(async () => {
