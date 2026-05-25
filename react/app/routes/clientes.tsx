@@ -87,6 +87,7 @@ export default function Clientes() {
   const [modalAberto, { open, close }] = useDisclosure(false);
   const { listar, criar, atualizar, alternarStatus } = clientesApi;
   async function carregar() {
+    setErro("");
     setLoading(true);
     try {
       setClientes(await listar());
@@ -110,18 +111,26 @@ export default function Clientes() {
   }
 
   async function salvar(data: { nome: string; telefone: string }) {
-    if (editando) {
-      await atualizar(editando.id, data);
-    } else {
-      await criar(data);
+    try {
+      if (editando) {
+        await atualizar(editando.id, data);
+      } else {
+        await criar(data);
+      }
+      close();
+      carregar();
+    } catch (e: any) {
+      setErro(e.message);
     }
-    close();
-    carregar();
   }
 
   async function alternarStatusCliente(id: number) {
-    await alternarStatus(id);
-    carregar();
+    try {
+      await alternarStatus(id);
+      carregar();
+    } catch (e: any) {
+      setErro(e.message);
+    }
   }
 
   const rows = clientes.map((c) => (
@@ -145,7 +154,7 @@ export default function Clientes() {
             <ActionIcon
               variant="light"
               color={c.ativo === false ? "green" : "orange"}
-              onClick={() => alternarStatus(c.id)}
+              onClick={() => alternarStatusCliente(c.id)}
             >
               {c.ativo === false ? "✅" : "🔒"}
             </ActionIcon>

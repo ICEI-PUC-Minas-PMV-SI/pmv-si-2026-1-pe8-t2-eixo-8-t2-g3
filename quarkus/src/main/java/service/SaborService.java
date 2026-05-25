@@ -20,7 +20,6 @@ public class SaborService {
   public List<SaborResponse> listarTodos() {
     List<Sabor> sabores = repository.listAll();
     return sabores.stream()
-      .filter(s -> s.getIndicadorAtivo())
       .map(this::toResponse)
       .collect(Collectors.toList());
   }

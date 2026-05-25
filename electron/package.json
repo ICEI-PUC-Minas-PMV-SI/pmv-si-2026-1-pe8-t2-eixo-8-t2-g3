@@ -1,0 +1,52 @@
+{
+  "name": "desejonatural-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "jlink": "bash build-resources.sh",
+    "dist:mac": "electron-builder --mac --x64 --arm64",
+    "dist:linux": "electron-builder --linux AppImage",
+    "dist:win": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "br.pucminas.desejonatural",
+    "productName": "Desejo Natural",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "resources/**"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/jre",
+        "to": "jre",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "resources/desejonatural-1.0.0-runner.jar",
+        "to": "desejonatural-1.0.0-runner.jar"
+      }
+    ],
+    "mac": {
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.business"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Office"
+    },
+    "win": {
+      "target": ["nsis"],
+      "icon": null
+    }
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}

@@ -31,6 +31,7 @@ export default function Sabores() {
   const [modalAberto, { open, close }] = useDisclosure(false);
 
   async function carregar() {
+    setErro("");
     setLoading(true);
     try {
       setSabores(await saboresApi.listar());
@@ -44,18 +45,26 @@ export default function Sabores() {
   useEffect(() => { carregar(); }, []);
 
   async function salvar(data: { nome: string }) {
-    if (editando) {
-      await saboresApi.atualizar(editando.id, data);
-    } else {
-      await saboresApi.criar(data);
+    try {
+      if (editando) {
+        await saboresApi.atualizar(editando.id, data);
+      } else {
+        await saboresApi.criar(data);
+      }
+      close();
+      carregar();
+    } catch (e: any) {
+      setErro(e.message);
     }
-    close();
-    carregar();
   }
 
   async function alternarStatus(id: number) {
-    await saboresApi.alternarStatus(id);
-    carregar();
+    try {
+      await saboresApi.alternarStatus(id);
+      carregar();
+    } catch (e: any) {
+      setErro(e.message);
+    }
   }
 
   const rows = sabores.map((s) => (
