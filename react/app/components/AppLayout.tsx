@@ -25,7 +25,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <AppShell
-      header={{ height: 60 }}
+      header={{ height: 80 }}
       navbar={{ width: 220, breakpoint: "sm" }}
       padding="md"
     >
@@ -34,7 +34,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <img
             src="/desejo-natural-logo.png"
             alt="Desejo Natural"
-            style={{ height: rem(96) }}
+            style={{ height: "80%" }}
           />
         </Group>
       </AppShellHeader>
