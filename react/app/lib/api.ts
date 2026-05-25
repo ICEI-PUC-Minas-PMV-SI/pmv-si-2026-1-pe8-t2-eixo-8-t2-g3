@@ -51,6 +51,7 @@ export interface Pedido {
   statusNome?: string;
   finalizado?: boolean;
   cancelado?: boolean;
+  valorUnitario?: number;
 }
 
 // ── Clientes ───────────────────────────────────────────────────────────────

@@ -85,14 +85,15 @@ export default function Clientes() {
   const [erro, setErro] = useState("");
   const [editando, setEditando] = useState<Cliente | null>(null);
   const [modalAberto, { open, close }] = useDisclosure(false);
-  const { listar, criar, atualizar, alternarStatus } = clientesApi;
+
   async function carregar() {
     setErro("");
     setLoading(true);
     try {
-      setClientes(await listar());
+      setClientes(await clientesApi.listar());
     } catch (e: any) {
       setErro(e.message);
+      setClientes([]);
     } finally {
       setLoading(false);
     }
@@ -113,9 +114,9 @@ export default function Clientes() {
   async function salvar(data: { nome: string; telefone: string }) {
     try {
       if (editando) {
-        await atualizar(editando.id, data);
+        await clientesApi.atualizar(editando.id, data);
       } else {
-        await criar(data);
+        await clientesApi.criar(data);
       }
       close();
       carregar();
@@ -126,8 +127,11 @@ export default function Clientes() {
 
   async function alternarStatusCliente(id: number) {
     try {
-      await alternarStatus(id);
-      carregar();
+      // otimistic update: atualiza a UI localmente imediatamente
+      setClientes((prev) => prev.map((c) => (c.id === id ? { ...c, ativo: !c.ativo } : c)));
+      await clientesApi.alternarStatus(id);
+      // garante consistência com o servidor
+      await carregar();
     } catch (e: any) {
       setErro(e.message);
     }

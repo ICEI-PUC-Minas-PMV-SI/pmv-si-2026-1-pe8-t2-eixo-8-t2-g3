@@ -52,6 +52,7 @@ function PedidoForm({
     inicial?.saborId ? String(inicial.saborId) : null
   );
   const [quantidade, setQuantidade] = useState<number | string>(inicial?.quantidade ?? 1);
+  const [valorUnitario, setValorUnitario] = useState<number | string>(inicial?.valorUnitario ?? "");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
 
@@ -61,13 +62,14 @@ function PedidoForm({
     setErro("");
     try {
       if (editando) {
-        await onSalvar({ quantidade: Number(quantidade) });
+        await onSalvar({ quantidade: Number(quantidade), valorUnitario: Number(valorUnitario) || undefined });
       } else {
         if (!clienteId || !saborId) return setErro("Preencha todos os campos");
         await onSalvar({
           clienteId: Number(clienteId),
           saborId: Number(saborId),
           quantidade: Number(quantidade),
+          valorUnitario: Number(valorUnitario) || undefined,
         });
       }
     } catch (err: any) {
@@ -107,6 +109,17 @@ function PedidoForm({
           onChange={setQuantidade}
           min={1}
           required
+        />
+        <NumberInput
+          label="Valor Unitário (R$)"
+          value={valorUnitario}
+          onChange={setValorUnitario}
+          min={0}
+          decimalScale={2}
+          fixedDecimalScale
+          thousandSeparator="."
+          decimalSeparator=","
+          prefix="R$ "
         />
         <Group justify="flex-end">
           <Button variant="default" onClick={onCancelar}>Cancelar</Button>
@@ -190,6 +203,7 @@ export default function Pedidos() {
         <Table.Td>{p.clienteNome ?? nomeCliente(p.clienteId)}</Table.Td>
         <Table.Td>{p.saborNome ?? nomeSabor(p.saborId)}</Table.Td>
         <Table.Td>{p.quantidade}</Table.Td>
+        <Table.Td>{p.valorUnitario}</Table.Td>
         <Table.Td>{statusBadge(p)}</Table.Td>
         <Table.Td>
           <Group gap="xs">
@@ -243,6 +257,7 @@ export default function Pedidos() {
                 <Table.Th>Cliente</Table.Th>
                 <Table.Th>Sabor</Table.Th>
                 <Table.Th>Qtd.</Table.Th>
+                <Table.Th>Valor Unitário</Table.Th>
                 <Table.Th>Status</Table.Th>
                 <Table.Th>Ações</Table.Th>
               </Table.Tr>

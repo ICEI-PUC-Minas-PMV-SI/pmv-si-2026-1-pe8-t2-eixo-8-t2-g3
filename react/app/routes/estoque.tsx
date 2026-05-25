@@ -8,6 +8,7 @@ import {
   Modal,
   NumberInput,
   Select,
+  SegmentedControl,
   Text,
   LoadingOverlay,
   Alert,
@@ -31,6 +32,7 @@ function EstoqueForm({
   onCancelar: () => void;
 }) {
   const [saborId, setSaborId] = useState<string | null>(null);
+  const [tipo, setTipo] = useState<"entrada" | "saida">("entrada");
   const [quantidade, setQuantidade] = useState<number | string>(0);
   const [validade, setValidade] = useState<number | string>(0);
   const [loading, setLoading] = useState(false);
@@ -42,9 +44,10 @@ function EstoqueForm({
     setLoading(true);
     setErro("");
     try {
+      const qtd = Number(quantidade);
       await onSalvar({
         saborId: Number(saborId),
-        quantidadeMovimentada: Number(quantidade),
+        quantidadeMovimentada: tipo === "saida" ? -qtd : qtd,
         validadeDias: Number(validade),
       });
     } catch (err: any) {
@@ -66,8 +69,17 @@ function EstoqueForm({
           required
           searchable
         />
+        <SegmentedControl
+          value={tipo}
+          onChange={(v) => setTipo(v as "entrada" | "saida")}
+          data={[
+            { value: "entrada", label: "Entrada" },
+            { value: "saida", label: "Saída" },
+          ]}
+          fullWidth
+        />
         <NumberInput
-          label="Quantidade Movimentada"
+          label="Quantidade"
           value={quantidade}
           onChange={setQuantidade}
           min={1}

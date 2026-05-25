@@ -4,10 +4,8 @@ import {
   AppShellNavbar,
   AppShellMain,
   Group,
-  Text,
   NavLink,
   ScrollArea,
-  Box,
   rem,
 } from "@mantine/core";
 import { Link, useLocation } from "react-router";
@@ -19,6 +17,7 @@ const navItems = [
   { label: "Sabores", to: "/sabores" },
   { label: "Estoque", to: "/estoque" },
   { label: "Status", to: "/status" },
+  { label: "Dashboards", to: "/dashboards" },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -32,24 +31,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     >
       <AppShellHeader>
         <Group h="100%" px="md" gap="sm">
-          <Box
-            style={{
-              width: rem(32),
-              height: rem(32),
-              borderRadius: rem(8),
-              background: "var(--mantine-color-brand-6)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text c="white" fw={700} size="sm">
-              DN
-            </Text>
-          </Box>
-          <Text fw={700} size="lg" c="brand.9">
-            Desejo Natural
-          </Text>
+          <img
+            src="/desejo-natural-logo.png"
+            alt="Desejo Natural"
+            style={{ height: rem(96) }}
+          />
         </Group>
       </AppShellHeader>
 
