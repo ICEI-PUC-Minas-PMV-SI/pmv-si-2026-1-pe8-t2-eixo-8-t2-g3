@@ -1,7 +1,10 @@
 package controller;
 
-import java.util.Map;
+import java.util.List;
 
+import dto.response.analytics.TotalClientesAtivosResponse;
+import dto.response.analytics.TotalProdutosEstoqueResponse;
+import dto.response.analytics.VendasPorMes;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -22,7 +25,7 @@ public class AnalyticsController {
   @Path("/clientes")
   public Response recuperarQuantidadeClientes() {
     try {
-      Long quantidade = service.recuperarQuantidadeClientes();
+      TotalClientesAtivosResponse quantidade = service.recuperarQuantidadeClientes();
       return Response.ok(quantidade).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -34,7 +37,7 @@ public class AnalyticsController {
   @Path("/vendas")
   public Response recuperarValorTotalVendasPorMes() {
     try {
-      Map<String, Double> vendasPorMes = service.recuperarValorTotalVendasPorMes();
+      List<VendasPorMes> vendasPorMes = service.recuperarValorTotalVendasPorMes();
       return Response.ok(vendasPorMes).build();
     } catch (Exception e) { 
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -46,7 +49,7 @@ public class AnalyticsController {
   @Path("/produtos-estoque")
   public Response recuperarQuantidadeProdutos() {
     try {
-      Long quantidade = service.recuperarQuantidadeProdutos();
+      TotalProdutosEstoqueResponse quantidade = service.recuperarQuantidadeProdutos();
       return Response.ok(quantidade).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

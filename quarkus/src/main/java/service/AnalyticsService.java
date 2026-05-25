@@ -1,9 +1,11 @@
 package service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+import dto.response.analytics.TotalClientesAtivosResponse;
+import dto.response.analytics.TotalProdutosEstoqueResponse;
+import dto.response.analytics.VendasPorMes;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import persistence.model.EstoqueProdutos;
@@ -24,24 +26,30 @@ public class AnalyticsService {
   @Inject
   EstoqueProdutosRepository estoqueRepository;
 
-  public Long recuperarQuantidadeClientes() {
-    return clienteRepository.count("indicadorAtivo", true);
+  public TotalClientesAtivosResponse recuperarQuantidadeClientes() {
+    Long total = clienteRepository.count("indicadorAtivo", true);
+    return new TotalClientesAtivosResponse(total);
   }
 
-  public Map<String, Double> recuperarValorTotalVendasPorMes() {
+  public List<VendasPorMes> recuperarValorTotalVendasPorMes() {
     List<Pedido> pedidos = pedidoRepository.listAll();
     return pedidos.stream()
       .filter(p -> p.getStatus().getNome().equals("Finalizado"))
       .collect(Collectors.groupingBy(
         p -> p.getDataPedido().toString().substring(0, 7),
         Collectors.summingDouble(p -> p.getQuantidade() * p.getValorUnitario())
-      ));
+      ))
+      .entrySet()
+      .stream()
+      .map(e -> new VendasPorMes(e.getKey(), e.getValue()))
+      .collect(Collectors.toList());
   }
 
-  public Long recuperarQuantidadeProdutos() {
+  public TotalProdutosEstoqueResponse recuperarQuantidadeProdutos() {
     List<EstoqueProdutos> estoques = estoqueRepository.listAll();
-    return estoques.stream()
+    Long total = estoques.stream()
       .mapToLong(EstoqueProdutos::getQuantidadeMovimentada)
       .sum();
+    return new TotalProdutosEstoqueResponse(total);
   }
 }
