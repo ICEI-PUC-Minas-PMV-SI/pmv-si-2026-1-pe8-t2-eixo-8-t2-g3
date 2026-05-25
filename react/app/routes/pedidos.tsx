@@ -130,6 +130,14 @@ function PedidoForm({
   );
 }
 
+function formatarValor(valor?: number) {
+  if (valor == null) return "—";
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
+
 function statusBadge(p: Pedido) {
   if (p.cancelado) return <Badge color="red" variant="light">Cancelado</Badge>;
   if (p.finalizado) return <Badge color="green" variant="light">Finalizado</Badge>;
@@ -203,7 +211,7 @@ export default function Pedidos() {
         <Table.Td>{p.clienteNome ?? nomeCliente(p.clienteId)}</Table.Td>
         <Table.Td>{p.saborNome ?? nomeSabor(p.saborId)}</Table.Td>
         <Table.Td>{p.quantidade}</Table.Td>
-        <Table.Td>{p.valorUnitario}</Table.Td>
+        <Table.Td>{formatarValor(p.valorUnitario)}</Table.Td>
         <Table.Td>{statusBadge(p)}</Table.Td>
         <Table.Td>
           <Group gap="xs">

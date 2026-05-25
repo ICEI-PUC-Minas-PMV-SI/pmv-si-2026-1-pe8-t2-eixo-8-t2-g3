@@ -31,7 +31,7 @@ export interface Estoque {
   saborNome?: string;
   quantidadeMovimentada: number;
   validadeDias: number;
-  quantidadeTotal?: number;
+  dataCriacao?: string;
 }
 
 export interface Status {

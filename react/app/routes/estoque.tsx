@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Title,
   Button,
@@ -13,6 +13,7 @@ import {
   LoadingOverlay,
   Alert,
   Box,
+  Badge,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { AppLayout } from "../components/AppLayout";
@@ -101,6 +102,53 @@ function EstoqueForm({
   );
 }
 
+interface ProdutoEstoque {
+  saborId: number;
+  saborNome: string;
+  quantidadeTotal: number;
+  proximaValidade: string | null;
+}
+
+function formatarData(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleDateString("pt-BR");
+}
+
+function agruparPorProduto(movimentos: Estoque[], sabores: Sabor[]): ProdutoEstoque[] {
+  const mapa = new Map<number, ProdutoEstoque>();
+
+  for (const m of movimentos) {
+    let grupo = mapa.get(m.saborId);
+    if (!grupo) {
+      grupo = {
+        saborId: m.saborId,
+        saborNome: m.saborNome ?? sabores.find((s) => s.id === m.saborId)?.nome ?? "–",
+        quantidadeTotal: 0,
+        proximaValidade: null,
+      };
+      mapa.set(m.saborId, grupo);
+    }
+
+    grupo.quantidadeTotal += m.quantidadeMovimentada;
+
+    if (m.quantidadeMovimentada > 0 && m.validadeDias > 0 && m.dataCriacao) {
+      const criacao = new Date(m.dataCriacao);
+      const expiracao = new Date(criacao.getTime() + m.validadeDias * 24 * 60 * 60 * 1000);
+      const hoje = new Date();
+      if (expiracao >= hoje) {
+        if (!grupo.proximaValidade || expiracao < new Date(grupo.proximaValidade)) {
+          grupo.proximaValidade = expiracao.toISOString();
+        }
+      }
+    }
+  }
+
+  return Array.from(mapa.values()).map((g) => ({
+    ...g,
+    proximaValidade: g.proximaValidade ? formatarData(g.proximaValidade) : null,
+  }));
+}
+
 export default function Estoque() {
   const [estoque, setEstoque] = useState<Estoque[]>([]);
   const [sabores, setSabores] = useState<Sabor[]>([]);
@@ -108,7 +156,7 @@ export default function Estoque() {
   const [erro, setErro] = useState("");
   const [modalAberto, { open, close }] = useDisclosure(false);
 
-  async function carregar() {
+  const carregar = useCallback(async () => {
     setLoading(true);
     try {
       const [e, s] = await Promise.all([estoqueApi.listar(), saboresApi.listar()]);
@@ -119,9 +167,11 @@ export default function Estoque() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { carregar(); }, []);
+  useEffect(() => { carregar(); }, [carregar]);
+
+  const produtos = useMemo(() => agruparPorProduto(estoque, sabores), [estoque, sabores]);
 
   async function salvar(data: { saborId: number; quantidadeMovimentada: number; validadeDias: number }) {
     await estoqueApi.criar(data);
@@ -129,17 +179,24 @@ export default function Estoque() {
     carregar();
   }
 
-  function nomeSabor(id?: number) {
-    return sabores.find((s) => s.id === id)?.nome ?? id ?? "–";
-  }
-
-  const rows = estoque.map((e, i) => (
-    <Table.Tr key={e.id ?? i}>
-      <Table.Td>{e.id ?? "–"}</Table.Td>
-      <Table.Td>{e.saborNome ?? nomeSabor(e.saborId)}</Table.Td>
-      <Table.Td>{e.quantidadeMovimentada}</Table.Td>
-      <Table.Td>{e.quantidadeTotal ?? "–"}</Table.Td>
-      <Table.Td>{e.validadeDias} dias</Table.Td>
+  const rows = produtos.map((p) => (
+    <Table.Tr key={p.saborId}>
+      <Table.Td>{p.saborId}</Table.Td>
+      <Table.Td>{p.saborNome}</Table.Td>
+      <Table.Td>
+        <Badge color={p.quantidadeTotal > 0 ? "green" : "red"} variant="light">
+          {p.quantidadeTotal}
+        </Badge>
+      </Table.Td>
+      <Table.Td>
+        {p.proximaValidade ? (
+          <Badge color="yellow" variant="light">
+            {p.proximaValidade}
+          </Badge>
+        ) : (
+          <Text c="dimmed">—</Text>
+        )}
+      </Table.Td>
     </Table.Tr>
   ));
 
@@ -159,17 +216,16 @@ export default function Estoque() {
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>ID</Table.Th>
-                <Table.Th>Sabor</Table.Th>
-                <Table.Th>Qtd. Movimentada</Table.Th>
-                <Table.Th>Qtd. Total</Table.Th>
-                <Table.Th>Validade</Table.Th>
+                <Table.Th>Produto</Table.Th>
+                <Table.Th>Qtd. em Estoque</Table.Th>
+                <Table.Th>Próxima Validade</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
               {rows.length > 0 ? rows : (
                 <Table.Tr>
-                  <Table.Td colSpan={5}>
-                    <Text ta="center" c="dimmed" py="md">Nenhuma movimentação registrada</Text>
+                  <Table.Td colSpan={4}>
+                    <Text ta="center" c="dimmed" py="md">Nenhum produto no estoque</Text>
                   </Table.Td>
                 </Table.Tr>
               )}
